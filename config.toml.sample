@@ -1,0 +1,2 @@
+# Following line is optional (defaults to postgres://localhost/workspace?sslmode=disable)
+sqlConnStr = "postgres://localhost/workspace?sslmode=disable"
