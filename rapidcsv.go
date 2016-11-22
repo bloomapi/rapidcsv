@@ -97,9 +97,9 @@ func main() {
 
 	// BOOTSTRAP DB
 
-	bloomdb := bloomdb.CreateDB()
-	
-	conn, err := bloomdb.SqlConnection()
+  bdb := bloomdb.DBFromConfig(viper.GetString("sqlConnStr"), viper.GetStringSlice("searchHosts"))
+
+	conn, err := bdb.SqlConnection()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -137,7 +137,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = bloomsource.Insert(vr, mapping.Sources[0], []string{sourceName}, "sync")
+	err = bloomsource.InsertWithDB(bdb, vr, mapping.Sources[0], []string{sourceName}, "sync")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
