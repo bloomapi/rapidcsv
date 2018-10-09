@@ -3,7 +3,7 @@ go:
 - '1.7'
 before_install:
   - go get github.com/mitchellh/gox
-  - gox -build-toolchain
+  - gox
   - go get github.com/tcnksm/ghr
 after_success:
   - gox -output "dist/{{.OS}}_{{.Arch}}_{{.Dir}}"
