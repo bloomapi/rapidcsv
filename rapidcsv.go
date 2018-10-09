@@ -4,8 +4,8 @@ import (
 	"os"
 	"fmt"
 	"encoding/csv"
-	"bitbucket.org/gocodo/bloomsource"
-	"bitbucket.org/gocodo/bloomsource/helpers"
+	"github.com/bloomapi/dataloading"
+	"github.com/bloomapi/dataloading/helpers"
 	"github.com/gocodo/bloomdb"
 	"github.com/spf13/viper"
 )
@@ -19,9 +19,9 @@ func showUsage() {
 
 type FakeDescription struct {}
 
-func (f *FakeDescription) Available() ([]bloomsource.Source, error) {
-	return []bloomsource.Source{
-	    bloomsource.Source{
+func (f *FakeDescription) Available() ([]dataloading.Source, error) {
+	return []dataloading.Source{
+	    dataloading.Source{
 	      Name: sourceName,
 	      Version: "20150000",
 	    },
@@ -47,7 +47,7 @@ func (f *FakeDescription) FieldNames(sourceName string) ([]string, error) {
   return columns, nil
 }
 
-func (f *FakeDescription) Reader(source bloomsource.Source) (bloomsource.ValueReader, error) {
+func (f *FakeDescription) Reader(source dataloading.Source) (dataloading.ValueReader, error) {
 	fileReader, err := os.Open(filePath)
   if err != nil {
     return nil, err
@@ -87,13 +87,13 @@ func main() {
 
 	// GET SCHEMA
 
-	schema, err := bloomsource.Schema(desc)
+	schema, err := dataloading.Schema(desc)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	mapping := bloomsource.SchemaToMapping(schema)
+	mapping := dataloading.SchemaToMapping(schema)
 
 	// BOOTSTRAP DB
 
@@ -105,8 +105,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	sql := bloomsource.MappingToTableOnly(mapping)
-	indexSql := bloomsource.MappingToIndex(mapping)
+	sql := dataloading.MappingToTableOnly(mapping)
+	indexSql := dataloading.MappingToIndex(mapping)
 
 	sql = "DROP TABLE IF EXISTS " + sourceName + "; DROP TABLE IF EXISTS " + sourceName + "_revisions; " + sql
 
@@ -137,7 +137,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = bloomsource.InsertWithDB(bdb, vr, mapping.Sources[0], []string{sourceName}, "sync")
+	err = dataloading.InsertWithDB(bdb, vr, mapping.Sources[0], []string{sourceName}, "sync")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
